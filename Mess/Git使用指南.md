@@ -14,7 +14,7 @@ git clone  <remote url> 从远程仓库拉取到本地，并初始化本地仓�
 git remote add origin <remote url> 添加远程仓库
 完成链路回环
 git add -a
-git pull origin <remote branch name>:<local branch name> 拉取到本地仓库
+git pull origin <remote branch name>:<local branch n ame> 拉取到本地仓库
 git push origin <remote branch name> 推送到远程分支
 分支管理
 git branch 列出本地已经存在的分支，并且当前分支会用*标记
@@ -28,7 +28,10 @@ git branch --no-merged 查看所有未合并工作的分支
 git branch <branch name> 新建一个本地分支
 git branch -d <branch name> 删除本地分支
 git branch -D <branch name> 强制删除本地分支
-git checkout -b <branch name> 新建一个本地分支
+git checkout <branch name> 切换一个本地存在的分支
+git checkout -b <branch name> 新建一个本地分支并切换
+
+git branch --set-upstream-to origin/<branch name> 关联本地分支到远程分支
 
 git push --set-upstream origin <branch name> 
 git push origin :<branch name> 删除远程分支，冒号表示删除
