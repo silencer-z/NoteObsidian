@@ -64,8 +64,28 @@ __显示接口__：修改`port`文件夹中的`lv_port_disp.c`与`lv_port_disp.h
 6. 修改`disp_flush`函数，将其与画点函数对接，实现接口连接
 
 __输入接口__:修改`port`文件夹中的`lv_port_indev.c`与`lv_port_indev.h` 
-输入方式一共有五种：Touchpad、Mouse、Keypad、Encoder、Button。
-1. 声明变量lv_indev_t，其中包含了设备类型和回调函数
-2. 初始化设备
-3. 将设备在LVGL中注册lv_indev_drv_init，lv_indev_drv_register
-4. 实现回调函数，LVGL会重复调用回调函数实现物理设备的读取，在回调函数中完成的内容则是读取物理设备的信息，并将信息转化为事件包装起来，传递给LVGL供LVGL响应
+输入方式一共有五种：Touchpad、Mouse、Keypad、Encoder、Button。从其函数定义我们便可以看出Touchpad，Mouse是基于屏幕位置的控制输入，button则是只有两个状态的控制输入，keypad则是多个控制指令的控制输入，encoder则是一个螺旋按钮，有短按，长按，左旋，右旋多种状态。根据需求，我们选择合适的控制输入模式
+```C
+static void touchpad_init(void);  
+static void touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);  
+static bool touchpad_is_pressed(void);  
+static void touchpad_get_xy(lv_coord_t * x, lv_coord_t * y);  
+  
+static void mouse_init(void);  
+static void mouse_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);  
+static bool mouse_is_pressed(void);  
+static void mouse_get_xy(lv_coord_t * x, lv_coord_t * y);  
+  
+static void keypad_init(void);  
+static void keypad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);  
+static uint32_t keypad_get_key(void);  
+  
+static void encoder_init(void);  
+static void encoder_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);  
+static void encoder_handler(void);  
+  
+static void button_init(void);  
+static void button_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);  
+static int8_t button_get_pressed_id(void);  
+static bool button_is_pressed(uint8_t id);
+```
