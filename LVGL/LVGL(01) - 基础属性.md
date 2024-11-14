@@ -6,9 +6,9 @@
 
 **空间单位**
 >像素(pixel)：简单地说就是一个以像素为单位的位置。整数总是指像素。
-
+>
 >百分比(percentage)：是对象自身或其父对象大小的百分比。`lv_pct(value)` 。
-
+>
 >LV_SIZE_CONTENT(auto)：根据子对象设置宽度和高度，相当于CSS中的`auto`。
 
 # 位置
@@ -105,13 +105,47 @@ LVGL有两种对齐方法，**内部对齐**和**外部对齐**，前者是用�
 
 >[! WARNING] 所有对齐函数，在被对齐目标位置发生改变的时候，需要再设置一边对齐。
 # 大小
+LVGL参考CSS的设置，也采用盒子模型。具体盒子模型的设置我们在样式中讨论，这里只指定其宽度和高度。
+```C
+/**  
+ * Set the width of an object 
+ * @param obj       pointer to an object 
+ * @param w         the new width
+ **/
+ void lv_obj_set_width(struct _lv_obj_t * obj, lv_coord_t w);  
+  
+/**  
+ * Set the height of an object 
+ * @param obj       pointer to an object 
+ * @param h         the new height
+ **/
+void lv_obj_set_height(struct _lv_obj_t * obj, lv_coord_t h);
+/**  
+ * Set the size of an object. 
+ * @param obj       pointer to an object 
+ * @param w         the new width 
+ * @param h         the new height 
+ **/
+void lv_obj_set_size(struct _lv_obj_t * obj, lv_coord_t w, lv_coord_t h);
+```
 
-## Boxing model
-![[Pasted image 20241111154051.png]]
- **边界框**(Width&Height)：元素的宽度/高度
- **边框宽度**(Border)：边框的宽度
- **内边距**(Padding)：对象与其子元素之间的间距
- **外边距**(Outline)：对象外部的间距
- **内容**(Content)：内容区域，即边界框减去边框宽度和内边距的大小
+在设置宽度和高度的时候其单位不光可以是整数(像素)，也可以是`lv_pct()`根据父类内容区域大小计算，其也支持特殊值`LV_SIZE_CONTENT`，这意味着对象在相应方向上的大小将被设置为其子对象恰好所需的大小
+>[!NOTE] 使用`LV_SIZE_CONTENT`的时候只有右侧和底部的子对象会被考虑，顶部和左侧对象依然会被裁切。此外拥有`LV_OBJ_FLAG_HIDDEN`和`LV_OBJ_FLAG_FLOATING`的对象会被忽略
 
 # 布局
+布局可以更新对象子对象的位置和大小。它们可以用于自动排列子对象成一行或一列，或者以更复杂的形式排列，布局设置的位置和大小会**覆盖x、y、宽度和高度设置**。每个布局都有一个相同的函数： `lv_obj_set_layout()` 用于在对象上设置布局。
+```C
+/**  
+ * Set a layout for an object 
+ * @param obj       pointer to an object 
+ * @param layout    pointer to a layout descriptor to set 
+ **/
+void lv_obj_set_layout(struct _lv_obj_t * obj, uint32_t layout);
+```
+同样的LVGL将CSS中`Flex`和`Grid`布局引入，但也不完全相同，具体的内容在布局中更详细描述。
+ - **FlexBox**：将对象排列成行或列，支持换行和扩展项目
+ - **Grid**：在二维表中将对象排列成固定位置
+>[!NOTE] 在使用布局的时候一些标志位也会影响布局的行为：
+> - `LV_OBJ_FLAG_HIDDEN`:隐藏的对象在布局计算中被忽略
+> - `LV_OBJ_FLAG_IGNORE_LAYOUT`:该对象被布局简单地忽略。它的坐标可以像常规那样设置
+> - `LV_OBJ_FLAG_FLOATING`:与`LV_OBJ_FLAG_IGNORE_LAYOUT`相同，但会被设置`LV_SIZE_CONTENT`计算时被忽略
